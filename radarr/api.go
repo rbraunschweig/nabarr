@@ -148,6 +148,46 @@ func (c *Client) getExclusions() (map[int]exclusion, error) {
 	return exclusions, nil
 }
 
+func (c *Client) getTagIds(tagNames []string) ([]int, error) {
+	if len(tagNames) == 0 {
+		return []int{}, nil
+	}
+
+	// send request
+	resp, err := rek.Get(util.JoinURL(c.apiURL, "tag"), rek.Client(c.http), rek.Headers(c.apiHeaders))
+	if err != nil {
+		return nil, fmt.Errorf("request tags: %w", err)
+	}
+	defer resp.Body().Close()
+
+	// validate response
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("validate tags response: %s", resp.Status())
+	}
+
+	// decode response
+	b := new([]struct {
+		Id    int    `json:"id"`
+		Label string `json:"label"`
+	})
+	if err := json.NewDecoder(resp.Body()).Decode(b); err != nil {
+		return nil, fmt.Errorf("decode tags response: %w", err)
+	}
+
+	// find matching tags
+	tagIds := make([]int, 0)
+	for _, tagName := range tagNames {
+		for _, tag := range *b {
+			if strings.EqualFold(tag.Label, tagName) {
+				tagIds = append(tagIds, tag.Id)
+				break
+			}
+		}
+	}
+
+	return tagIds, nil
+}
+
 func (c *Client) AddMediaItem(item *media.Item, opts ...nabarr.PvrOption) error {
 	// prepare options
 	o, err := nabarr.BuildPvrOptions(opts...)
@@ -162,6 +202,7 @@ func (c *Client) AddMediaItem(item *media.Item, opts ...nabarr.PvrOption) error 
 		Year:                item.Year,
 		QualityProfileId:    c.qualityProfileId,
 		Images:              []string{},
+		Tags:                c.tagIds,
 		Monitored:           o.AddMonitored,
 		RootFolderPath:      c.rootFolder,
 		MinimumAvailability: "released",

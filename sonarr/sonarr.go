@@ -24,6 +24,7 @@ type Client struct {
 	rootFolder        string
 	qualityProfileId  int
 	languageProfileId int
+	tagIds            []int
 
 	// options
 	searchMissing bool
@@ -120,6 +121,15 @@ func New(c nabarr.PvrConfig, mode string, m *media.Client, cc *cache.Client) (*C
 			return nil, fmt.Errorf("get language profile: %v: %w", c.LanguageProfile, err)
 		} else {
 			cl.languageProfileId = lid
+		}
+	}
+
+	// get tags
+	if len(c.Tags) > 0 {
+		if tagIds, err := cl.getTagIds(c.Tags); err != nil {
+			return nil, fmt.Errorf("get tags: %w", err)
+		} else {
+			cl.tagIds = tagIds
 		}
 	}
 

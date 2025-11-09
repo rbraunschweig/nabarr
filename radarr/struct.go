@@ -31,6 +31,7 @@ type addRequest struct {
 	Year                int        `json:"year"`
 	QualityProfileId    int        `json:"qualityProfileId"`
 	Images              []string   `json:"images"`
+	Tags                []int      `json:"tags"`
 	Monitored           bool       `json:"monitored"`
 	RootFolderPath      string     `json:"rootFolderPath"`
 	MinimumAvailability string     `json:"minimumAvailability"`

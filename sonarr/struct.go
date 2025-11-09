@@ -36,7 +36,7 @@ type addRequest struct {
 	QualityProfileId  int        `json:"qualityProfileId"`
 	LanguageProfileId int        `json:"languageProfileId,omitempty"`
 	Images            []string   `json:"images"`
-	Tags              []string   `json:"tags"`
+	Tags              []int      `json:"tags"`
 	Monitored         bool       `json:"monitored"`
 	RootFolderPath    string     `json:"rootFolderPath"`
 	AddOptions        addOptions `json:"addOptions"`

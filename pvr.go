@@ -14,6 +14,7 @@ type PvrConfig struct {
 	QualityProfile  string `yaml:"quality_profile"`
 	LanguageProfile string `yaml:"language_profile"`
 	RootFolder      string `yaml:"root_folder"`
+	Tags            []string `yaml:"tags"`
 	Options         struct {
 		// add options
 		AddMonitored  *bool `yaml:"add_monitored"`
